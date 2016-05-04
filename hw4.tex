@@ -179,15 +179,14 @@ $\bullet \quad$ The total runtime of this algorithm is $\mathcal{O}(n^2)$ \\
 3) Create a 4-dimensional table $L[i,j,p,q]$ with size n in each dimension and initialize every entry with positive infinity. In this table, $i,j,p,q$ are the farthest points on path p1, p4, p2, p3 respectively. $L[i,j,p,q]$ is the current minimum of length sum of sub path from 1 to i on p1, sub path from 1 to j on p4, sub path from a to p on p2 and the sub path from a to q on p3. \\
 
 4) We use the following rules to update the table: \\
-Denote the next point( excluding 1 and a) to put into one of P1, P2, P3 and P4 as k(index). k starts at 2 and ends at n.
+Denote the next point( excluding 1 and a) to put into one of P1, P2, P3 and P4 as k(index). k starts at 2 and ends at n. Denote d(c,d) as distance between point c and d. \\
 Base Case:  $L[1,1,a,a]=0$ \\
 Recursion Case: \\
 Case 1: if $1<k<a$, \\
-$k = 1+\max\{i,j\}$
-Denote d(c,d) as distance between point c and d.
-$L[k,j,a,a]= \min \{L[i,j,a,a] + d(k,j), L[k,j,a,a] \}$
-$L[i,k,a,a]= \min \{L[i,j,a,a] + d(k,i), L[i,k,a,a] \}$
-Case 2: if $a<r<b$, \\
+$k = 1+\max\{i,j\}$ \\
+$L[k,j,a,a]= \min \{L[i,j,a,a] + d(k,j), L[k,j,a,a] \}$ \\
+$L[i,k,a,a]= \min \{L[i,j,a,a] + d(k,i), L[i,k,a,a] \}$ \\
+Case 2: if $a<k<b$, \\
 $ k = 1+\max \{i,j,p,q \} $ \\
 $L[k,j,p,q] = \min \{L[i,j,p,q] + d(k,i), L[k,j,p,q] \}$ \\ 
 $L[i,k,p,q] = \min \{L[i,j,p,q] + d(k,j), L[i,k,p,q] \}$ \\
@@ -205,8 +204,12 @@ Correctness: \\
 Inductive hypothesis: \\
 The algorithm would offer the optimal 4 tonic tour of points set 1 to n, for $n < n'$, for some $n'$. we can inductively prove the algorithm from $n'$. \\
 Inductive case: \\
-In base case: \\
-We have only two points and need to add k to the path. If k is less than a, k could only be on p1 or p4, since the second path and the third path start from a. Therefore, if k is on the first path, by trying all different i, we can get the minimum value of $L[k, j, a, a]$. We can apply this approach to the last path and get the minimum value of the last path. If $a < k < b$, we need to take four scenarios into consideration when we try to put k. If k is on p1, by trying all different i, we can get the minimum value of $L[k, j, p, q]$, If k is on p4, by trying all different j, we can get the minimum value of $L[i, k, p, q]$. If k is on p2, by checking all different p, we can get the minimum value of $L[i, j, k, q]$. If k is on p3, by checking all different q, we can get the minimum value of $L[i, j, p, k]$. If k equals to b, k must be the turning point between p3 and p4. In this case, we need to check all different j and we can get the minimum value of $L[i, b, p, q]$. In case of $b < k < n$, k should be on p1 or p2. If it is on p1, by checking all different i, we can get the the minimum value of $L[k, b, p, b]$. If it is on p2, by trying all different p, we can get the minimum value of $L[i, b, k, b]$. Finally, when k is the last element to add, it should be the rightmost point of p1 and p2. Therefore, by trying all i, we can get the minimum path of given a,b. After trying all a,b pairs, we can get the optimal 4 tonic-tour. \\
+Base case: \\
+We have only two points and need to add k to the path. If k is less than a, k could only be on p1 or p4, since the second path and the third path start from a. Therefore, if k is on the first path, by trying all different i, we can get the minimum value of $L[k, j, a, a]$. We can apply this approach to the last path and get the minimum value of the last path.\\ 
+If $a < k < b$, we need to take four scenarios into consideration when we try to put k. If k is on p1, by trying all different i, we can get the minimum value of $L[k, j, p, q]$, If k is on p4, by trying all different j, we can get the minimum value of $L[i, k, p, q]$. If k is on p2, by checking all different p, we can get the minimum value of $L[i, j, k, q]$. If k is on p3, by checking all different q, we can get the minimum value of $L[i, j, p, k]$. \\
+If k equals to b, k must be the turning point between p3 and p4. In this case, we need to check all different j and we can get the minimum value of $L[i, b, p, q]$. \\ 
+In case of $b < k < n$, k should be on p1 or p2. If it is on p1, by checking all different i, we can get the the minimum value of $L[k, b, p, b]$. If it is on p2, by trying all different p, we can get the minimum value of $L[i, b, k, b]$.  \\
+Finally, when k is the last element to add, it should be the rightmost point of p1 and p2. Therefore, by trying all i, we can get the minimum path of given a,b. After trying all a,b pairs, we can get the optimal 4 tonic-tour. \\
 Time complexity:
 The table size is $n^4$, for each entry in the table, we should try all different i, the runtime is $\mathcal{O}(n)$. We also need to try all different a, b, there are $\frac{(n-3)(n-2)}{2}$ choices, therefore, the time complexity should be $\mathcal{O}(n^7)$.
 \end{document}
