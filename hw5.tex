@@ -65,12 +65,77 @@ $ laststop = 0 $ \;
 }
    $return\  A$ \;
 \end{algorithm}
+Correctness: \\
+In order to prove correctness of this algorithm, we need to show that this problem has the greedy-choice and optimal-substructure properties. \\
+The following lemma proves the greedy-choice property holds. \\
+Lemma 1: \\
+Let $A$ be an optimal solution for stoping and the sequence of stops is $\{ a_1, a_2, \cdots, a_k \}, k \le n$. Assume $a^*$ is the first gas station that we can go as far as possible as the algorithm told us to choose. There is an optimal solution that uses $s^*$ as the first stop. \\
+Proof of Lemma 1: \\
+If $a_1 = a^*$, then $A$ is the optimal solution that uses $a^*$ as the first stop, we don't need to do further work. If $a_1 \neq a^*$, according to the algorithm, we need to choose the first stop as far as possible, then we can know that $d_{a_1} \le d_{a^*}$. Consider a solution $A'$ which has the sequence of stops is $\{a^*, a_2,\cdots, a_k \}$, since $d_{a_1} \le d_{a^*}$, then $d_{a_2} - d_{a_1} \ge d_{a_2} - d_{a^*}$. And because $d_{a_2} - d_{a_1} \le m$, we know that $d_{a_2} - d_{a^*} \le m$. Therefore, $A'$ is a legitimate solution. Since $|A| = |A'|$, then we can get the conclusion that $A'$ is an optimal solution. \\
+The following lemma proves the optimal-substructure property holds. \\
+Lemma 2: \\
+Let's assume that $A$ is an optimal solution $A$ to the original problem $P$, then $A$ includes an optimal solution $A'$ to the problem $P'$ that after stoping at $a_i$, we need to drive from $a_i$ to Miami given $d_{i+1}, d_{i+2}, \cdots,d_n$ and stop as few as possible. \\
+Proof of Lemma 2: \\
+Let's assume we have an optimal solution $A'$ to problem $P'$, we can find that $A = A' \cup a_i$. Hence, $Cost(A) = Cost(A') + 1$. Therefore, the optimal solution $A$ to the original problem contains an optimal solution $A'$ to a subproblem $P'$.
 
 \problem{2}
 \solution
 
 \problem{3}
 \solution
+The construction of a tree for 6-ary codewords is similar to the construction of a tree for huffman code. Because we have 6 character codes and we need to construct a tree, we would construct a tree with $6 + 5k$ leaves. If we have n characters with frequence $f_i (1 \le i \le n)$ and we cannot find a integer k such that $n = 6+5k$, we need to find the smallest integer $k^*$ such that $6+5k^* > n$. We need to create m dummy nodes with frequence $f_i = 0 (1 \le i \le m)$ so that $6+5k^* = m+n$. Hence, we get m+n characters with frequence $f_i (1 \le i \le m+n)$.
+Algorithm: \\
+We first put all the characters into a min-priority queue Q using its frequency as key. Then, we find the 6 characters with smallest frequency as leaves, then we construct a node with the sum of its six children's frequency as its frequency and push this node into the queue. We keep doing this until there is no character in queue. \\
+\begin{algorithm}[H]
+\KwData{$C$}
+\KwResult{$A$}
+$n = m+|C|$ \;
+$Q = C + m\ dummy\ nodes$ \;
+\For{ $ i = 1; i \le n-1; i++ $ }
+{
+Allocate a new node $z$ \;
+ \For{ $ j = 1;j \le 6; j++ $} {
+$z.j = EXTRACT-MIN(Q)$ \; 
+ }
+ $z.freq = \sum _{i=1} ^{6} z.i.freq$ \;
+ $Q = Q + z$ \;
+}
+   $return\  EXTRACT-MIN(Q)$ \;
+\end{algorithm}
+Correctness: \\
+In order to prove correctness of this algorithm, we need to show that this problem has the greedy-choice and optimal-substructure properties. \\
+Lemma 1: \\
+Let $C$ be an alphabet in which each character $char \in C$ has frequency $char.freq$. Let $a,b,c,d,e,f$ be six characters in $C$ having the lowest frequencies. Then there exists an optimal prefix code for C in which the codewords $a,b,c,d,e,f$ have the same length and differ only in the last bit. This lemma proves the greedy-choice property holds. \\
+Proof of Lemma 1: \\
+Let $g,h,i,j,k,l$ be the six characters that are sibling leaves with maximum depth in tree $T$ which represents an optimal prefix code. Let's assume that $a.freq \le b.freq \le c.freq \le d.freq \le e.freq \le f.freq$, also $g.freq \le h.freq \le i.freq \le j.freq \le k.freq \le l.freq$. Since $a,b,c,d,e,f$ are six characters in $C$ having the lowest frequencies, and we can have $a.freq \le g.freq, b.freq \le h.freq, c.freq \le i.freq, d.freq \le j.freq, e.freq \le k.freq, f.freq \le l.freq$. By switching pairs such as $\{a,g\}, \{b,h\}, \{c,i\}, \{d,j\}, \{e,k\}, \{f,l\}$, we can obtain six trees $T_0, T_1, T_2, T_3, T_4, T_5$. The difference in cost between $T$ and $T_0$ is: \\
+\begin{align*}
+Cost(T) - Cost(T_0) &= \sum _{c \in C} c.freq \cdot d_T(c) -  \sum _{c \in C} c.freq \cdot d_{T_0}(c) \\
+&= a.freq \cdot d_T(a) + g.freq \cdot d_T(g) - a.freq \cdot d_{T_0} (a) - g.freq \cdot d_{T_0} (g) \\
+&= a.freq \cdot d_T(a) + g.freq \cdot d_T(g) - a.freq \cdot d_{T} (g) - g.freq \cdot d_{T} (a) \\
+&= (g.freq - a.freq) (d_T(g) - d_T(a)) \\
+& \ge 0
+\end{align*}
+We can apply the same calculation to $T_1,T_2,T_3,T_4,T_5$ and get the conclusion that $Cost(T) \ge Cost(T_0) \ge Cost(T_1) \ge Cost(T_2) \ge Cost(T_3) \ge Cost(T_4) \ge Cost(T_5)$. Therefore $Cost(T_5) \ge Cost(T)$, since $T$ is an optimal solution, we have $Cost(T) \ge Cost(T_5)$, which implies $Cost(T) = Cost(T_5)$. Thus, $T_5$ is an optimal tree in which $a,b,c,d,e,f$ appear as sibling leaves of maximum depth, from which the lemma follows. \\
+Lemma 2: \\
+Let $C$ be an alphabet in which each character $char \in C$ has frequency $char.freq$. Let $a,b,c,d,e,f$ be six characters in $C$ having the lowest frequencies. Let $C'$ be the alphabet which removes $a,b,c,d,e,f$ from $C$ and adds a new character $z$ into it. $C' = C - \{a,b,c,d,e,f\} + \{z\}, z.freq = a.freq + b.freq + c.freq + e.freq + d.freq + f.freq $. Let $T'$ be any tree representing an optimal prefix code for the alphabet $C'$. Then the tree $T$ , obtained from $T'$ by replacing the leaf node for  $z$ with an internal node having $a,b,c,d,e,f$ as children, represents an optimal prefix code for the alphabet $C$. \\
+Proof of Lemma 2: \\
+Cost of $T$ can be represented as:
+\begin{align*}
+\sum _{char = a,b,c,d,e,f} char.freq \cdot d_T(char) &= \sum _{char = a,b,c,d,e,f} char.freq \cdot (d_{T'} (z) + 1) \\
+&= z.freq \cdot d_{T'} (z) + \sum _{char = a,b,c,d,e,f} char.freq
+\end{align*}
+Hence, we can get the equation:
+$$Cost(T) = Cost(T') + \sum _{char = a,b,c,d,e,f} char.freq$$
+Assume that $T$ cannot represent an optimal prefix code for $C$, then we can find $T''$ such that $Cost(T'') < Cost(T)$. In this case, we can build a tree $T'''$ represent a prefix code for $C'$. \\
+We also can get the equation: 
+$$Cost(T'') = Cost(T''') + \sum _{char = a,b,c,d,e,f} char.freq$$
+Hence,
+\begin{align*}
+Cost(T''') &= Cost(T'') - \sum _{char = a,b,c,d,e,f} char.freq \\
+&< Cost(T) -  \sum _{char = a,b,c,d,e,f} char.freq \\
+&= Cost(T')
+\end{align*}
+Which means the cost of $T'''$ is smaller than cost of $T'$. This contradicts our assumption that $T'$ is an optimal prefix code for $C'$. Therefore, $T$ should be an optimal prefix code for $C$.
 
 \problem{4}
 \solution
@@ -113,5 +178,38 @@ If we don't use a greedy algorithm to solve the problem of making change for n c
 This conclusion contradicts our previous conclusion that $\sum _{i=0} ^{j-1} a_i c^i \ge c^j$, hence, the non-greedy strategy is not an optimal solution. In other words, only a greedy algorithm is an optimal solution. \\
 c) Give a set of coin denominations for which the greedy algorithm does not yield an optimal solution. \\
 We can easily find a set of coin denominations for which the greedy algorithm cannot yield an optimal solution. Let's say we have a set of coin denominations which havs value $\{1, 4, 5 \}$ and we have 8 cents. A greedy algorithm will give us the solution $8 = 5 + 1 + 1 + 1$ which uses four coins, while we can easily find out that a non-greedy solution will give us the optimal solution $8 = 4 + 4$ which uses only two coins. \\
-d)
+d)Give an $\mathcal{O}(nk)$-time algorithm that makes change for any set of k different coin denominations, assuming that one of the coins is a penny. \\
+\solution
+We could use dynammic programming strategy to solve this problem. \\
+Table: \\
+$OPT[i]$ = the minimum number of coins used for making change for i cents. $0 \le i \le n$\\
+Output for the problem: \\
+The shortest maximum-weight of a common subsequence. \\
+Base Case: \\
+$ i = 0, OPT[i] = 0$ \\
+Recursion Case: \\
+$OPT[i] = \min \{1 + OPT[i-d_j]: 1 \le j \le k \}$ \\
+Extra information: \\
+The coin we chose for i cents \\
+Algorithm: \\
+\begin{algorithm}[H]
+\KwData{$d_j,n$}
+\KwResult{$A$}
+$OPT[0] = 0$ \;
+\For{ $ i = 1; i \le n; i++ $ }
+{
+$OPT[i] = \infty$ \;
+$choice[i] = 0$ \;
+\For{ $ j = 1; j \le k; j++ $}
+{
+\If{$j \ge d_j\ and\ OPT[i] > 1 + OPT[i-d_j]$} {
+	$OPT[i] = 1 + OPT[i - d_j]$ \;
+	$choice[i] = d_j$ \;
+	}
+}
+}
+   $return\  A$ \;
+\end{algorithm}
+Time complexity: \\
+There are two loops in this algorithm, so the running time for this algorithm is $\mathcal{O}(kn)$
 \end{document}
