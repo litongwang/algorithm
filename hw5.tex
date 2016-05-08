@@ -1,0 +1,117 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath, amssymb,algorithmic}
+\usepackage[]{algorithm2e}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\pagestyle{empty}
+\def\pp{\par\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\baselinestretch}{1.2}
+\newcommand{\problem}[1]{ \bigskip \pp \textbf{Problem #1}\par}
+\newcommand{\solution}{\textit{Solution:}\par}
+\newcommand{\answer}{\medskip\pp\textit{Answer:} }
+\newcommand{\lemma}[1]{\medskip\pp\textit{Lemma #1:}}
+\newcommand{\proof}{\medskip\pp\textit{Proof:} }
+\newcommand{\hint}[1] {\par{\footnotesize {\bf Hint:} #1}}
+\newcommand{\remark}[1]{\par{\footnotesize {\bf Remark:} #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\bbZ}    {\mathbb{Z}}
+\newcommand{\bbQ}    {\mathbb{Q}}
+\newcommand{\bbN}    {\mathbb{N}}
+\newcommand{\bbB}    {\mathbb{B}}
+\newcommand{\bbR}    {\mathbb{R}}
+\newcommand{\bbC}    {\mathbb{C}}
+\newcommand{\calP}   {{\cal{P}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\cov}{cov}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\centerline{\bf EECS 336}
+
+\medskip
+\centerline{Litong Wang}
+\centerline{Homework 5}
+\centerline{May 9, 2016}
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{1}
+\solution
+We should go as far as possible before we need to refill the tank. Let's assume $a_i$ to be the gas station which has distance $d_i$ from Chicago, $A$ to be the set contains gas station where we should stop. \\
+Algorithm: \\
+\begin{algorithm}[H]
+\KwData{$d_i,m$}
+\KwResult{$A$}
+$ A = \emptyset $ \;
+$ laststop = 0 $ \;
+\For{ $ i = 1; i \le n; i++ $ }
+{
+ \If{$d_i - laststop > m$} {
+	$A = A \cup a_{i-1}$ \;
+	$laststop = d_{i-1}$ \;
+	}
+}
+   $return\  A$ \;
+\end{algorithm}
+
+\problem{2}
+\solution
+
+\problem{3}
+\solution
+
+\problem{4}
+\solution
+We should sort sets A and B into monotonically increasing order. Then we can use this order to achieve the maximum payoff $ \Pi _{i = 1}^{n} a_i^{b_i}$.\\
+Proof: \\
+Consider any two indices such that $i < j$, we can have two items, $a_i^{b_i}$ and $a_j^{b_j}$. We need to prove that the payoff which includes $a_i^{b_i}$ and $a_j^{b_j}$ is greater than payoff that includes $a_i^{b_j}$ and $a_j^{b_i}$. We only need to prove that $a_i^{b_i} a_j^{b_j} \ge a_i^{b_j} a_j^{b_i}$. Because A and B are sorted into monotonically increasing order, $a_i \le a_j\ and\ b_i \le b_j$. We divide $a_i^{b_i} a_j^{b_j}$ and $a_i^{b_j} a_j^{b_i}$ by $a_j^{b_i} a_i^{b_i}$, then we can have $a_j^{b_j - b_i}$ and $a_i^{b_j - b_i}$. Because $b_j - b_i \ge 0$ and $a_j \ge a_i$, we can have $a_j^{b_j - b_i} \ge a_i^{b_j - b_i}$.\\
+$$a_j^{b_j - b_i} \ge a_i^{b_j - b_i} \Leftrightarrow a_i^{b_i} a_j^{b_j} \ge a_i^{b_j} a_j^{b_i}$$
+The running time for sorting is $\mathcal{O}(n \log n)$ and the time for computing payoff is $\mathcal{O}(n)$. Hence, the running time for this algorithm is $\mathcal{O}(n \log n)$.
+
+\problem{5}
+\solution
+Quarter = 25 cents, dime = 10 cents, nickel = 5 cents and penny = 1 cent. \\
+The coin changing problem has optimal substructure. Assume we have an optimal solution for making change for n cents, we use a coin whose value is v and we use k coins in this solution. This optimal solution must contain an optimal solution for problem of making change for n-v cents. k-1 coins are used in the optimal solution to n-v cents problem used within optimal solution to the n cents problem. If we can find a solution that uses coins fewer than k-1 coins for n-v cents problem, then we can cut and paste this solution to the n cents problem. In this case, we can find a solution for n cents problem that uses coins fewer than k. This contradicts the optimality of the solution. \\
+
+a) A greedy algorithm to make change consisting of quarters, dimes, nickels, and pennies: \\
+Let's denote $count_{quarter}$ to be the number of quarters used in the solution. $count_{quarter} =  \floor[\big]{\frac{n}{25}}$, and the coins remain are $n_q = n \mod 25$. \\
+Let's denote $count_{dime}$ to be the number of quarters used in the solution. $count_{dime} =  \floor[\big]{\frac{n_q}{10}}$, and the coins remain are $n_d = n_q \mod 10$. \\
+Let's denote $count_{nickel}$ to be the number of quarters used in the solution. $count_{nickel} =  \floor[\big]{\frac{n_d}{5}}$, and the coins remain are $n_p = n_n \mod 5$. $count_{penny} = n_p$ \\
+Correctness: \\
+To prove this algorithm yields an optimal solution, we need first shows that the geedy-choice property holds. The geedy-choice property is that an optimal solution to making change for n cents includes a coin of value v, which is the largest value such that $v \le n$. Consider an optimal solution, if this optimal solution contains v, then we can finish our proving. If the optimal solution doesn't contain value v, then we need to take four cases into consideration. \\
+$\bullet \quad$ If $1 \le n < 5$, then we have $ v = 1 $. Ths solution can only consist of pennies, and so it must contain the greedy choice. \\ 
+$\bullet \quad$ If $5 \le n < 10$, then we have $ v = 5 $. By supposition, the optimal solution doesn't contain a nickel. We can replace five pennies by a nickel, in this case, we can get a solution with four coins fewer. \\
+$\bullet \quad$ If $10 \le n < 25$, then we have $ v = 10 $. By supposition, the optimal solution doesn't contain a dime. We can replace pennies and nickels which adds up to 10 cents by a dime, in this case, we can get a solution with fewer coins. \\
+$\bullet \quad$ If $25 \le n $, then we have $ v = 25 $. By supposition, the optimal solution doesn't contain a quarter. The solution can only consist of pennies, nickels and dimes. If we have three dimes, we can replace them with a quarter and a nickel. In this case, we can get a solution with one fewer coin. If pennies, nickels and dimes adds up to 25 cents, we can replace them with a quarter. In this way, we can get a solution with fewer coins. \\
+Thus, we can see that there is always an optimal solution that includes the geedy choice. Therefore, we can combine the greedy choice with an optimal solution to the subproblem to produce the optimal solution to the original problem. \\
+Time complexity: \\
+We choose one coin at a time and compute the subproblem recursively, the running time is $\Theta(k)$, k is the number of coins used in an optimal solution. Because $k \le n$, the running time is $\mathcal{O}(n)$. In each computation, the running time is $\mathcal{O}(1)$. Hence, the running time of this algorithm is $\mathcal{O}(n).$ \\ 
+b) Show that the greedy algorithm always yields an optimal solution. \\
+The greedy algorithm for making change for n cents is to find the denomination $c^j$ such that $j = \max \{0 \le i \le k: c^i \le n \}$. And then we compute the subproblem of making change for $n - c^j$. 
+Correctness: \\
+If in the optimal solution, we use $a_i$ coins of denomination $c^i$ to make change for n cents, then $a_i < c$. If $a_i \ge c$, we can replace c $c^i$ with a $c^{i+1}$, then we can reduce the total number of coins by $c-1$. \\
+If we don't use a greedy algorithm to solve the problem of making change for n cents, we can get a solution which uses denominations $c^0,c^1,\cdots,c^{j-1}$ and $\sum _{i=0} ^{j-1} a_i c^i = n$, also $n \ge c^j$. Because $n \ge c^j$, $\sum _{i=0} ^{j-1} a_i c^i \ge c^j$. Let's assume that the non-greedy algorithm is an optimal solution, then we can get $a_i \le c-1$ for $i = 0,1,\cdots,j-1$. Then we can get the following conclusion: \\
+\begin{align*}
+\sum _{i=0} ^{j-1} a_i c^i &\le \sum _{i=0} ^{j-1} (c-1) a^i \\
+&= (c-1) \sum _{i=0} ^{j-1} a^i \\
+&= (c-1) \frac{1 - c^j}{1-c} \\
+&= c^j - 1 \\
+&< c^j \\
+\end{align*}
+This conclusion contradicts our previous conclusion that $\sum _{i=0} ^{j-1} a_i c^i \ge c^j$, hence, the non-greedy strategy is not an optimal solution. In other words, only a greedy algorithm is an optimal solution. \\
+c) Give a set of coin denominations for which the greedy algorithm does not yield an optimal solution. \\
+We can easily find a set of coin denominations for which the greedy algorithm cannot yield an optimal solution. Let's say we have a set of coin denominations which havs value $\{1, 4, 5 \}$ and we have 8 cents. A greedy algorithm will give us the solution $8 = 5 + 1 + 1 + 1$ which uses four coins, while we can easily find out that a non-greedy solution will give us the optimal solution $8 = 4 + 4$ which uses only two coins. \\
+d)
+\end{document}
