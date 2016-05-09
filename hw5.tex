@@ -83,7 +83,7 @@ Let's assume we have an optimal solution $A'$ to problem $P'$, we can find that 
 (a) increasing order of weight: \\
 This algorithm is incorrect. Let's assume that we have two knapsacks both have capacities of 5. And we have five items with the following values and weights: \\
 item1: weight = 1, value = 1, item2: weight = 2, value = 2, item3: weight = 3, value = 3, item4: weight = 4, value = 4, item5: weight = 5, value = 100 \\
-According to the algorithm, we should choose the item with less weight to fill our knapsacks first. Then we can get the result: we fill one knapsack with item1 and item4 and fill another knapsack with item2 and item3, hence, the total value of this solution is 10. However, we can easily know that the optimal solution is filling one knapsack with item5 and another knapsack with item1 and item4 or item2 and item3. Then, we can get a total value of 105. 
+According to the algorithm, we should choose the item with less weight to fill our knapsacks first. Then we can get the result: we fill one knapsack with item1 and item3 and fill another knapsack with item2, hence, the total value of this solution is 6. However, we can easily know that the optimal solution is filling one knapsack with item5 and another knapsack with item1 and item4 or item2 and item3. Then, we can get a total value of 105. 
 
 (b) decreasing order of value: \\
 This algorithm is incorrect. Let's assume that we have two knapsacks both have capacities of 5. And we have three items with the following values and weights: \\
