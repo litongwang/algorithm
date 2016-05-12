@@ -1,0 +1,123 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath, amssymb,algorithmic}
+\usepackage[]{algorithm2e}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\pagestyle{empty}
+\def\pp{\par\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\baselinestretch}{1.2}
+\newcommand{\problem}[1]{ \bigskip \pp \textbf{Problem #1}\par}
+\newcommand{\solution}{\textit{Solution:}\par}
+\newcommand{\answer}{\medskip\pp\textit{Answer:} }
+\newcommand{\lemma}[1]{\medskip\pp\textit{Lemma #1:}}
+\newcommand{\proof}{\medskip\pp\textit{Proof:} }
+\newcommand{\hint}[1] {\par{\footnotesize {\bf Hint:} #1}}
+\newcommand{\remark}[1]{\par{\footnotesize {\bf Remark:} #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\bbZ}    {\mathbb{Z}}
+\newcommand{\bbQ}    {\mathbb{Q}}
+\newcommand{\bbN}    {\mathbb{N}}
+\newcommand{\bbB}    {\mathbb{B}}
+\newcommand{\bbR}    {\mathbb{R}}
+\newcommand{\bbC}    {\mathbb{C}}
+\newcommand{\calP}   {{\cal{P}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\cov}{cov}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\centerline{\bf EECS 336}
+
+\medskip
+\centerline{Litong Wang}
+\centerline{Homework 6}
+\centerline{May 16, 2016}
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{1}
+\solution
+Assume $D_i$ is the heap after the $i$th operation, and consists of $n_i$ elements. $k$ is a constant such that $c_i \le k \ln n$. sWe can define the potential function $\Phi(D_i)$ as follow: 
+\begin{equation}
+    \Phi{D_i}=
+   \begin{cases}
+   0 &\mbox{if $i = 0 $}\\
+   k n_i \ln n_i &\mbox{if $ i > 0$}
+   \end{cases}
+\end{equation}
+If we start with an empty heap, then we have $\Phi(D_0) = 0$, and we always maintain that $\Phi(D_i) \ge 0.$ \\
+If the $i$th operation is Insert, then $n_i = n_{i-1} + 1$. If we start with an empty heap, $n_{i-1} = 0$ and $n_i = 1$. And the amortized cost is: 
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi(D_i) - \Phi(D_{i-1}) \\
+&\le k \ln 1 + k \cdot 1 \ln 1 - 0 \\
+&= 0
+\end{align*}
+If we insert the element into an nonempty, then $n_i = n_{i-1} + 1$, then the amortized cost is:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi(D_i) - \Phi(D_{i-1}) \\
+&\le k \ln n_i + k \cdot n_i \ln n_i - k \cdot n_{i-1} \ln n_{i-1} \\
+&= k \ln n_i + k \cdot n_i \ln n_i - k \cdot (n_i - 1) \ln (n_i -1) \\
+&= k \ln n_i + k \cdot n_i \ln n_i - k \cdot n_i \ln (n_i -1) + k \cdot \ln (n_i - 1) \\
+&\le 2 k \ln n_i + k \cdot n_i \ln \frac{n_i}{n_i - 1} \\
+&\le 2 k \ln n_i + 2k \\
+&= \mathcal{O}(\lg n_i)
+\end{align*}
+If the $i$th operation is Extract-Min, then $n_i = n_{i-1} -1$. If the $i$th operation extracts from a heap with only one element, then $n_i = 0$ and $n_{i-1} = 1$. And the amortized cost is:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi(D_i) - \Phi(D_{i-1}) \\
+&\le k \ln 1 + 0 - k \cdot 1 \ln 1 \\
+&= 0
+\end{align*}
+If the $i$th operation is Extract-Min and extracts from a heap with more than one element, then $n_i = n_{i-1} - 1$ and $n_{i-1} \ge 2$, and the amortized cost is:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi(D_i) - \Phi(D_{i-1}) \\
+&\le k \ln n_{i-1} + k n_i \ln n_i - k n_{i-1} \ln n_{i-1} \\ 
+&= k \ln n_{i-1} + k (n_{i-1} -1) \ln (n_{i-1} - 1) - k n_{i-1} \ln n_{i-1} \\
+&= k \ln n_{i-1} + k n_{i-1} \ln (n_{i-1} - 1) - k \ln (n_{i-1}-1) - k n_{i-1} \ln n_{i-1} \\
+&= k \ln \frac{n_{i-1}}{n_{i-1} - 1} + k n_{i-1} \ln \frac{n_{i-1} - 1}{n_{i-1}} \\
+&< k \ln \frac{n_{i-1}}{n_{i-1} - 1} \\
+&\le k \ln 2 \\
+&= \mathcal{O}(1)
+\end{align*}
+
+\problem{2}
+\solution
+a) Let's say we have two stacks $A$ and $B$. We use stack $A$ to do enqueue operation and use stack $B$ to do dequeue operation. In case of a dequeue operation, if stack $B$ is empty, we need to pop all the elements from stack $A$ and push it into stack $B$, then we can do the dequeue operation. \\
+The actual costs of operations were:
+\begin{align*}
+Enqueue \quad & 1, \\
+Dequeue \quad & s, \\
+Multi-Dequeue \quad & 2 \min(k,s),
+\end{align*}
+where $k$ is the arguement supplied by Multi-Dequeue and $s$ is the size of stack $A$. We can assgin the the following amortized costs: 
+\begin{align*}
+Enqueue \quad & 4, \\
+Dequeue \quad & 0, \\
+Multi-Dequeue \quad & 0,
+\end{align*}
+We can pay for any sequence of queue operations by charging the amortized costs. Suppose we use a dollar bill to represent each unit of cost. We start with two empty stacks $A$ and $B$. In case of Enqueue operation, we push one element into stack $A$, and we use 1 dollar to pay the actual cost of the push and are left with a credit of 2 dollar. At any point in time, every element on the stack has 2 dollar of credit on it. \\
+The dollar stored as credits serves as prepayment for the future cost. One dollar of popping it from the stack $A$, one dollar of pushing it into stack $B$ and one dollar of popping it from stack $B$. When we execute a Dequeue operation, we charge the operation nothing and pay its actual cost using the credit stored in the stack. To dequeue an element from our queue, if stack $B$ is not empty, we take one dollar of credit from the bank and use it to pay the actual cost of the operation. If stack $B$ is empty, we need to pop all elements from stack $A$, we take one dollar of credit from the bank at each poping. And we push all these elements into stack $B$, we take one dollar of credit from the bank to pay for the actual cost. And we use one dollar of credit from the bank to pay for the actual cost of Dequeue which actually is poping from stack $B$. Thus, by charging the Enqueue operation a little bit more, we can charge the Dequeue operation nothing. \\
+Moreover, we can also charge Multi-Dequeue operations nothing. If stack $B$ is not empty, to Dequeue the first element, we take the dollar of credit from the bank and use it to pay the actual cost of a Pop operation. To Dequeue a second element, we again have a dollar of credit from the bank to pay for the Pop operation, and so on. If stack $B$ is empty, we Pop all elements from stack $A$ and Push it into stack $B$, we can use credits to pay for the actual costs. And then we Pop elements from stack $B$ to finish the Multi-Dequeue operation. Thus, we have always charged enough up front to pay for Multi-Dequeue operations. In other words, since each element on the stack $A$ has 3 dollar of credit on it, and the stack always has a nonnegative number of elements, we have ensured that the amount of credit is always nonnegative. Thus, for any sequence of n Enqueue, Dequeue, and Multi-Dequeue operations, the total amortized cost is an upper bound on the total actual cost. Since the total amortized cost is $\mathcal{O}(n)$, so is the total actual cost. And the amortized cost of each Enqueue, Dequeue and Multi-Dequeue is $\mathcal{O}(1)$.
+
+\problem{3}
+\solution
+
+\problem{4}
+\solution
+
+\problem{5}
+\solution
+
+\end{document}
