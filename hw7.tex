@@ -1,0 +1,181 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath, amssymb,algorithmic}
+\usepackage[]{algorithm2e}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\pagestyle{empty}
+\def\pp{\par\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\baselinestretch}{1.2}
+\newcommand{\problem}[1]{ \bigskip \pp \textbf{Problem #1}\par}
+\newcommand{\solution}{\textit{Solution:}\par}
+\newcommand{\answer}{\medskip\pp\textit{Answer:} }
+\newcommand{\lemma}[1]{\medskip\pp\textit{Lemma #1:}}
+\newcommand{\proof}{\medskip\pp\textit{Proof:} }
+\newcommand{\hint}[1] {\par{\footnotesize {\bf Hint:} #1}}
+\newcommand{\remark}[1]{\par{\footnotesize {\bf Remark:} #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\bbZ}    {\mathbb{Z}}
+\newcommand{\bbQ}    {\mathbb{Q}}
+\newcommand{\bbN}    {\mathbb{N}}
+\newcommand{\bbB}    {\mathbb{B}}
+\newcommand{\bbR}    {\mathbb{R}}
+\newcommand{\bbC}    {\mathbb{C}}
+\newcommand{\calP}   {{\cal{P}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\cov}{cov}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\centerline{\bf EECS 336}
+
+\medskip
+\centerline{Litong Wang}
+\centerline{Homework 7}
+\centerline{May 23, 2016}
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{1}
+\solution
+a) The potential function is:
+\begin{equation}
+    \Phi{T}=
+   \begin{cases}
+   2 \cdot T.num - T.size &\mbox{if $\alpha(T) \ge \frac{1}{2}$,}\\
+   T.size / 2 - T.num &\mbox{if $\alpha(T) < \frac{1}{2}$.}\\
+   \end{cases}
+\end{equation}
+Because $\alpha_{i-1} \ge \frac{1}{2}$, and the $i$th operation is $Table-Delete$. If we want the table to contract after a $Table-Delete$, $T.num$ and $T.size$ should:
+\begin{align*}
+T.num_{i-1} &\ge \frac{1}{2} T.size_{i-1}, \\
+T.num_{i-1} - 1 &< \frac{1}{4} T.size_{i-1} - 1
+\end{align*}
+No $T.num$ and $T.size$ can satisfy this condition, so the $i$th operation cannot cause the table to contract. \\
+After $i$th operation, $\alpha_{i}$ could have two cases: $\alpha_{i} \ge \frac{1}{2}$ or $\frac{1}{4} \le \alpha_{i} < \frac{1}{2}$. For both cases, $T.num_{i} = T.num_{i-1} - 1$ and $T.size_{i} = T.size_{i-1}$\\
+Assume $\alpha_{i} \ge \frac{1}{2}$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( 2 \cdot T.num_{i} - T.size_{i} ) - ( 2 \cdot T.num_{i-1} - T.size_{i-1} ) \\
+&= 1 + ( 2 \cdot T.num_{i-1} - 2 - T.size_{i} ) - ( 2 \cdot T.num_{i-1} - T.size_{i-1} ) \\
+&= -1
+\end{align*}
+Assume $\frac{1}{4} \le \alpha_{i} < \frac{1}{2}$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( T.size_{i} / 2 - T.num_{i} ) - ( 2 \cdot T.num_{i-1} - T.size_{i-1} ) \\
+&= 1 + ( T.size_{i-1} / 2 - T.num_{i-1} + 1) - ( 2 \cdot T.num_{i-1} - T.size_{i-1} ) \\
+&= 2 + \frac{3}{2} \cdot T.size_{i-1} - 3 \cdot T.num_{i-1} \\
+&= 2 + 3 \cdot (\frac{1}{2} - \alpha_{i-1}) \cdot T.size_{i-1} \\
+&\le 2
+\end{align*}
+$\therefore$ The amortized cost of the operation is bounded by a constant. \\
+b) The potential function is:
+\begin{equation}
+    \Phi{T}=
+   \begin{cases}
+   8 \cdot T.num - 4 \cdot T.size &\mbox{if $\alpha(T) \ge \frac{1}{2}$,}\\
+   5 \cdot T.size - 10 \cdot T.num &\mbox{if $\alpha(T) < \frac{1}{2}$.}\\
+   \end{cases}
+\end{equation}
+Assume $\alpha_{i} \ge \frac{1}{2}$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( 8 \cdot T.num_{i} - 4 \cdot T.size_{i} ) - ( 8 \cdot T.num_{i-1} - 4 \cdot T.size_{i-1} ) \\
+&= 1 + ( 8 \cdot (T.num_{i-1} - 1) - 4 \cdot T.size_{i} ) - ( 8 \cdot T.num_{i-1} - 4 \cdot T.size_{i-1} ) \\
+&= -7
+\end{align*}
+Assume $\frac{1}{4} \le \alpha_{i} < \frac{1}{2}$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( 5 \cdot T.size_{i}  - 10 \cdot T.num_{i} ) - ( 8 \cdot T.num_{i-1} - 4 \cdot T.size_{i-1} ) \\
+&= 1 + ( 5 \cdot T.size_{i-1} - 10 \cdot (T.num_{i-1} - 1)) - ( 8 \cdot T.num_{i-1} - 4 \cdot T.size_{i-1} ) \\
+&= 11 + 9 \cdot T.size_{i-1} - 18 \cdot T.num_{i-1} \\
+&= 11 + 9 \cdot (T.size_{i-1} - \alpha_{i-1} \cdot 2 \cdot T.size_{i-1}) \\
+&\le 11
+\end{align*}
+$\therefore$ The amortized cost of the operation is bounded by a constant.
+
+\problem{2}
+\solution
+If we contract it by multiplying its size by $\frac{2}{3}$ when its load factor drops below $\frac{1}{3}$. Using the potential function $\Phi(T) = |2\cdot T.num - T.size|$. \\
+If $\alpha_{i-1} \ge \frac{1}{2}$ and $\alpha_{i} \ge \frac{1}{2}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (2 \cdot T.num_{i} - T.size_{i}) - (2 \cdot T.num_{i-1} - T.size_{i-1}) \\
+&= 1 + (2 \cdot (T.num_{i-1} - 1) - T.size_{i-1}) - (2 \cdot T.num_{i-1} - T.size_{i-1}) \\
+&= -1
+\end{align*}
+If $\alpha_{i-1} \ge \frac{1}{2}$ and $\alpha_{i} < \frac{1}{2}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (T.size_{i} - 2 \cdot T.num_{i} ) - (2 \cdot T.num_{i-1} - T.size_{i-1}) \\
+&= 1 + (T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1)) - (2 \cdot T.num_{i-1} - T.size_{i-1}) \\
+&= 3 + 2 \cdot T.size_{i-1} - 4 \cdot T.num_{i-1} \\
+&= 3 + 2 \cdot (T.size_{i-1} - 2 \cdot T.num_{i-1}) \\
+&= 3 + 2 \cdot (T.size_{i-1} - 2 \alpha_{i-1} \cdot T.size_{i-1}) \\
+&\le 3
+\end{align*}
+If $\frac{1}{3} \le \alpha_{i-1} \le \frac{1}{2}$ and $\frac{1}{3} \le \alpha_{i} \le \frac{1}{2}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( T.size_{i} - 2 \cdot T.num_{i} ) - ( T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= 1 + ( T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1) ) - ( T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= 3
+\end{align*}
+If $\frac{1}{3} \le \alpha_{i-1} \le \frac{1}{2}$ and the $Delete$ operation cause a contraction, the actual cost of the operation $c_i = T.num_{i} + 1$, $T.size_{i} = \frac{2}{3} T.size_{i-1}$ and $T.num_{i-1} = \frac{1}{3} T.size_{i-1}$:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= (T.num_{i} +1)+ ( T.size_{i} - 2 \cdot T.num_{i} ) - ( T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= T.num_{i-1} + \frac{2}{3} T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1) - ( T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= \frac{1}{3} \cdot T.size_{i-1} + \frac{2}{3} T.size_{i-1} - \frac{2}{3} T.size_{i-1} + 2 - T.size_{i-1} + \frac{2}{3} \cdot T.size_{i-1} \\
+&= 2
+\end{align*}
+$\because$ $\widehat{c_i} \le 3$, $\therefore$ the amortized cost of a $Table-Delete$ that uses this strategy is bounded above by a constant. \\
+b) If we contract it by multiplying its size by $\frac{2}{3}$ when its load factor drops below $\frac{1}{6}$. We cannot have a potential function such that the amortized cost of a $Table−Delete$ is bounded above by a constant. \\
+Assume $\alpha_{i-1} \ge \frac{1}{6}$ and $\alpha_{i} < \frac{1}{6}$
+
+\problem{3}
+\solution
+Suppose we can find an algorithm $A$ such that can solve the $LONGEST-PATH-LENGTH$ problem in polynomial time.
+Given an instance of decison problem $LONGEST-PATH = \{ \left \langle G,u,v,k \right \rangle : G = (V,E) \}$,
+we run algorithm $A$ on instance of problem $LONGEST-PATH-LENGTH = \{ \left \langle G,u,v \right \rangle : G = (V,E) \} $
+and we get the longest length $k'$ from algorithm $A$. $ \left \langle G,u,v,k \right \rangle $ is a "YES" instance of $LONGEST-PATH$
+if $k$ satisfies that $k \le k'$. Hence, if we can use algorithm $A$ solve $LONGEST-PATH-LENGTH$ problem in polynomial time, we also can
+solve problem $LONGEST-PATH$ in polynomial time. $LONGEST-PATH \in P$ if $LONGEST-PATH-LENGTH \in P$. \\
+Suppose we can find an algorithm $A'$ such that can solve the $LONGEST-PATH$ problem in polynomial time.
+We can use algorithm $A'$ to try when $k' = 1,2,\cdots,n$, whether instance $ \left \langle G,u,v,k' \right \rangle $ is a "YES" instance of problem
+$LONGEST-PATH$. Then the result $k$ of problem $LONGEST-PATH-LENGTH = \{ \left \langle G,u,v \right \rangle : G = (V,E) \} $ is
+the largest $k'$ such that $ \left \langle G,u,v,k' \right \rangle $ is a "YES" instance of problem $LONGEST-PATH$. Because we can
+solve problem $LONGEST-PATH$ in polynomial time $\mathcal{O}(n^m)$ and we do it $n$ times. The total runtime is $\mathcal{O}(n^{m+1})$ which is still
+polynomial time. Hence, if we can use algorithm $A'$ solve $LONGEST-PATH$ problem in polynomial time, we also can solve $LONGEST-PATH-LENGH$ in polynomial time.
+$LONGEST-PATH-LENGTH \in P$ if $LONGEST-PATH \in P$. \\
+Hence, the optimization problem $LONGEST-PATH-LENGTH$ can be solved in polynomial time if and only if $LONGEST-PATH \in P$.
+
+\problem{4}
+\solution
+For some set $I$ of problem instances, we say that two encodings $e_1$ and $e2_$ are polynomially related if there exist two polynomial-time computable
+functions $f_{12}$ and $f_{21}$ such that for any $i \in I$, we have $f_{12}(e_1(i)) = e_2(i)$ and $f_{21}(e_2(i)) = e_1(i)$.
+
+\problem{5}
+\solution
+The dynamic-programming solution given to the 0-1 knapsack problem that runs in $\mathcal{O}(nW)$ time,
+where $n$ is the number of items and $W$ is the maximum weight of items that the thief can put in his knapsack. \\
+If the weight $W$ is provided in $unary$, then the running time of the algorithm is $\mathcal{O}(nW)$ on length-$nW$ inputs,
+which is polynomial time. However, if the input of the problem, $W$, is given as a binary number. Hence, the input size of this problem
+is $\mathcal{O}(n \log W)$. Because for any fixed constant $c$, $nW > (n \log W)^{c}$, so the runtime $\mathcal{O}(nW)$
+is not a polynomial-time solution to the input size $\mathcal{O}(n \log W)$. \\
+How we encode an abstract problem matters quite a bit to how we understand polynomial time. Hence, the solution given to the 0-1 knapsack problem is not a polynomial-time solution.
+
+\end{document}
