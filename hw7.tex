@@ -165,15 +165,86 @@ Hence, the optimization problem $LONGEST-PATH-LENGTH$ can be solved in polynomia
 
 \problem{4}
 \solution
-For some set $I$ of problem instances, we say that two encodings $e_1$ and $e2_$ are polynomially related if there exist two polynomial-time computable
-functions $f_{12}$ and $f_{21}$ such that for any $i \in I$, we have $f_{12}(e_1(i)) = e_2(i)$ and $f_{21}(e_2(i)) = e_1(i)$.
+For some set $I$ of problem instances, we say that two encodings $e_1$ and $e_2$ are polynomially related if there exist two polynomial-time computable
+functions $f_{12}$ and $f_{21}$ such that for any $i \in I$, we have $f_{12}(e_1(i)) = e_2(i)$ and $f_{21}(e_2(i)) = e_1(i)$. \\
+The formal encoding $e_1$ of directed graphs as adjacency-matrix: \\
+We can use binary strings to encode directed graphs using an adjacency-matrix. We can scan the matrix from left to right, from top to bottom and record
+the bits in matrix. For example, suppose we have a adjacency-matrix represent graph $G=(V,E)$: where "1" means that $vertex_{row}$ and $vertex_{col}$ are connected and
+"0" means that these two vertices are not adjacent as defined in the adjacency-matrix.
+\[
+\begin{bmatrix}
+    0 & 1 & 1 & 0 \\
+    1 & 0 & 1 & 0 \\
+    1 & 0 & 0 & 0 \\
+    1 & 0 & 1 & 0
+\end{bmatrix}
+\]
+We can use the following binary strings to represent this adjacency-matrix : $0110\ 1010\ 1000\ 1010$.
+Assume we have $|V|$ vertices in the graph $G=(V,E)$, the size of the matrix is $|V|^2$ and every entry
+need one bit to represent, hence, the size of the binary strings is $|V|^2$ \\
+The formal encoding $e_2$ of directed graphs as adjacency-list: \\
+We can use an ASCII file to represent the adjacency-list, the $n$th line in the file represent the vertex number.
+The number followed by the number of line are the numbers of all vertices which are connected to $n$th vertex. \\
+The graph $G=(V,E)$ will be respresented as:
+\begin{align*}
+&line\ 1\quad 2\quad 3 \\
+&line\ 2\quad 1\quad 3 \\
+&line\ 3\quad 1\quad \\
+&line\ 4\quad 1\quad 3
+\end{align*}
+An ASCII code can be represented as binary strings. Hence, we can use binary strings to represent this ASCII file.
+Every number is in the range $1,2,\cdots,|V|$. The maximum length of every ASCII code represented by binary strings is $\log |V|$.
+The number of lines is determined by the number of vertices in graph $G=(V,E)$ and the number of elements followed the line number
+is determined by the number of edges in $G$. So the total number of ASCII codes in the file is $\mathcal{O}(|V|+|E|)$. Hence, the
+size of the binary strings is $\mathcal{O}((|V|+|E|) \log|V|)$. \\
+In order to show that these two encodings are polynomially related, we present two functions $f_{12}$ and $f_{21}$ such that
+for any $i \in I$, we have $f_{12}(e_1(i)) = e_2(i)$, $f_{21}(e_2(i)) = e_1(i)$ and they both run in polynomial time. \\
+Algorithm $f_{12}$: \\
+\begin{algorithm}[H]
+\KwData{$e_1$}
+\KwResult{$e_2$}
+\For{$ i=1; i \le |V|; i++ $}{
+  \For{$ j=1; j \le |V|; j++ $}{
+   \If{$ charAt(|V|*(i-1)+j) == 1 $}{
+   in ASCII file $line\ i$ add j\;
+    }
+   }
+}
+return ASCII file;
+\end{algorithm}
+This algorithm has two loops and assume each iteration takes $\mathcal{O}(k)$ time, so the total runtime of this algorithm is $\mathcal{O}(k|V|^2)$.
+Hence, algorthm $f_{12}$ runs in polynomial time and $f_{12}(e_1(i)) = e_2(i)$.
+Algorithm $f_{21}$: \\
+\begin{algorithm}[H]
+\KwData{$e_1$}
+\KwResult{$e_2$}
+string $s$ = "" \;
+\For{each line in ASCII file}{
+  string $s'$ = "" \;
+  \For{$ i=1; i \le |V|; j++ $}{
+   \eIf{i is in line}{
+   $s' += 1$ \;
+    } {
+    $s' += 0$ \;
+    }
+   }
+   $s += s'$ \;
+}
+return $s$;
+\end{algorithm}
+This algorithm has two loops. The outer loop iterates $|V|$ times and inner loop also iterates $|V|$ times,
+we assume each iteration takes $\mathcal{O}(k)$ time, so the total runtime of this algorithm is $\mathcal{O}(k|V|^2)$.
+Hence, algorthm $f_{21}$ runs in polynomial time and $f_{21}(e_2(i)) = e_1(i)$. \\
+$\because f_{12}(e_1(i)) = e_2(i)$, $f_{21}(e_2(i)) = e_1(i)$ and they both run in polynomial time. \\
+$\therefore$ these two encodings are polynomially related.
 
 \problem{5}
 \solution
 The dynamic-programming solution given to the 0-1 knapsack problem that runs in $\mathcal{O}(nW)$ time,
 where $n$ is the number of items and $W$ is the maximum weight of items that the thief can put in his knapsack. \\
 If the weight $W$ is provided in $unary$, then the running time of the algorithm is $\mathcal{O}(nW)$ on length-$nW$ inputs,
-which is polynomial time. However, if the input of the problem, $W$, is given as a binary number. Hence, the input size of this problem
+which is polynomial time. However, if encoding of an integer is not polynomially related to its binary representation.
+Let's say the input of the problem, $W$, is given as a binary number. Hence, the input size of this problem
 is $\mathcal{O}(n \log W)$. Because for any fixed constant $c$, $nW > (n \log W)^{c}$, so the runtime $\mathcal{O}(nW)$
 is not a polynomial-time solution to the input size $\mathcal{O}(n \log W)$. \\
 How we encode an abstract problem matters quite a bit to how we understand polynomial time. Hence, the solution given to the 0-1 knapsack problem is not a polynomial-time solution.
