@@ -1,0 +1,224 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath, amssymb,algorithmic}
+\usepackage[]{algorithm2e}
+\usepackage{fullpage}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\pagestyle{empty}
+\def\pp{\par\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\baselinestretch}{1.2}
+\newcommand{\problem}[1]{ \bigskip \pp \textbf{Problem #1}\par}
+\newcommand{\solution}{\textit{Solution:}\par}
+\newcommand{\answer}{\medskip\pp\textit{Answer:} }
+\newcommand{\lemma}[1]{\medskip\pp\textit{Lemma #1:}}
+\newcommand{\proof}{\medskip\pp\textit{Proof:} }
+\newcommand{\hint}[1] {\par{\footnotesize {\bf Hint:} #1}}
+\newcommand{\remark}[1]{\par{\footnotesize {\bf Remark:} #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\bbZ}    {\mathbb{Z}}
+\newcommand{\bbQ}    {\mathbb{Q}}
+\newcommand{\bbN}    {\mathbb{N}}
+\newcommand{\bbB}    {\mathbb{B}}
+\newcommand{\bbR}    {\mathbb{R}}
+\newcommand{\bbC}    {\mathbb{C}}
+\newcommand{\calP}   {{\cal{P}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\cov}{cov}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\centerline{\bf EECS 336}
+
+\medskip
+\centerline{Litong Wang}
+\centerline{Homework 8}
+\centerline{May 30, 2016}
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{1}
+\solution
+We need to show that a verification algorithm $V(x,y)$ can verify
+language $GRAPH-ISOMORPHISM = \{ \left \langle G_1, G_2 \right \rangle : G_1\ and\ G_2\ are\ isomorphic\ graphsg\}$
+in polynomial time. \\
+We let $x$ to be the two graph $G_1$ and $G_2$ and let the certificate $y$ to be a map $\{ f: v \in A, f(v) \in B \}$ from nodes in $G_1$ to nodes in $G_2$.
+The verification algorithm runs as follows: \\
+Withour loss of generality, \\
+1) Check whether every node in $G_1$ is in $A$ and every node in $G_2$ is in $B$. If no, return false; else continue. \\
+2) Check whether every node in $A$ is also in $G_1$ and check every node in $B$ is also in $G_2$. If no, return false; else continue. \\
+3) Check whether there is an edge$(u,v)$ in $G_1$ from $u$ to $v$ iff there is an edge$(f(u),f(v))$ in $G_2$ from $f(u)$ to $f(v)$. If yes, return true; else return false. \\
+Time complexity: \\
+The first two steps both takes $\mathcal{O}(|V|^2)$ time to run and the third step takes $\mathcal{O}(|E|)$ time to run.
+So this alorithm runs in polynomial time. \\
+$\because$ The problem $GRAPH-ISOMORPHISM$ can be verified in polynomial time. \\
+$\therefore$ $GRAPH-ISOMORPHISM \in NP$.
+
+\problem{2}
+\solution
+If we want to show that A decision problem is a member of $co-NP$, we need to prove its complement is in the complexity class NP.
+We define the complement of $TAUTOLOGY$ to be $co-TAUTOLOGY$: \\
+If the boolean formulas are tautologies then output "NO",
+if one of the boolean formulas is not tautology then ouput "YES". \\
+One of the inputs $x$ to $V$ is a boolean combinational circuit $C$.
+The other input $y$ is a certificate corresponding to an assignment of boolean values to the wires in $C$.
+We construct the algorithm $V$ as follows.
+We assign the value of input of $C$ the same as the value in $y$.
+For each logic gate in the circuit $C$, we correctly compute the output determined on inputs.
+If the output of the entire $C$ is 0, then the algorithm output 1.
+Since the values assigned to the inputs of $C$ proves that it is not a tautoglogy.
+Otherwise, $V$ outputs 0. \\
+Whenever a circuit which is not tautology is input to algorithm $V$,
+there exists a certificate whose length is polynomial in the size of $C$ and cause the output of $C$ to be 0.
+Whenever a circuit is a tautology, no certificate can make $C$ output 0.
+Hence, no certificate can fool $V$ into believing $C$ is not tautology. \\
+Assume the input size of $C$ is $k$, the runtime of this algorithm is $\mathcal{O}(k)$.
+Thus, we can verify $co-TAUTOLOGY$ in polynomial time, and $co-TAUTOLOGY \in NP$. Therefore, $TAUTOLOGY \in co-NP$
+
+\problem{3}
+\solution
+a) Algorithm for 2-coloring problem: \\
+\begin{algorithm}[H]
+\KwData{$G=(V,E)$ and two color red and blue}
+\KwResult{coloring of $G$}
+Set $Neighbours = \emptyset$ \;
+Set $Result = \emptyset$ \;
+$Neighbours = \{ v \}, v$ is any arbitray node in $V$\;
+$V = V- v$ \;
+$v.color = red$ \;
+\While{$Neighbours$ is not empty}{
+  pick one $v$ such that $v \in Neighbours$ \;
+  add the neighbours of $v$ into $Neighbours$ \;
+  remove these neighbours from $V$ \;
+   \eIf{$v.color == red$}{
+    \For{Each vertex $u \in v.neighbours$ } {
+      \eIf{$u.color == v.color$} { return $None$ \;}
+      {$u.color = blue$ \;}
+    }
+   }{
+   \For{Each vertex $u \in v.neighbours$ } {
+    \eIf{$u.color == v.color$} { return $None$ \;}
+     {$u.color = red$ \;}
+   }
+   }
+   add $v$ into $Result$ \;
+   connect corresponding edges \;
+   remove $v$ from $Neighbours$ \;
+}
+return $Result$ \;
+\end{algorithm}
+Correctness: \\
+If we find that the coloring is legal,
+which means the two endpoints of any edge in $G$ has different colors,
+then we determine a 2-coloring of a graph. \\
+If we find that it is an illgeal coloring, then the graph cannot be legally colored by two color.
+Claim: \\
+Let $u$ be a vertex in $G$.
+Any color that $u$ gets from the program is the color that $u$ must get if the $v$ is colored Red.
+In base case, $u = v$ the claim is clearly correct.
+If the distance between $u$ and $v$ is $d+1$, then $u$ must have a neghbour $u'$ such that has distance $d$ from $v$.
+By the indcution hypothesis, the color of $u'$ is the color that if $v$ is colored Red.
+Then $u$ only has one choice of color which is Red if $u'$ is Blue or Blue if $u'$ is Red.
+Hence, the claim is correct.
+We reach a contradiction because some vertex $u$ in $G$ is colored both Red and Blue by the program. \\
+Time complexity: \\
+We use bread-first-search alogrithm here.
+We only do coloring to each vertex once, hence the runtime of this algorithm is $\mathcal{O}(V)$.
+Hence, this algorithm is an efficient algorithm. \\
+b) The decision problem $D$: Given a graph $G=(V,E)$ and an integer $k$, does a k-coloring exist? Output "Yes" if it exists or "No" if it doen't. \\
+Assume we can solving graph-coloring problem in polynomial time and the solution uses $k'$ colors to do coloring of the graph.
+Then we can solve the decision problem $D$ by checking if $k \ge k'$.
+If $k \ge k'$ then it is an "YES" instance of decision problem.
+If $k < k'$ then it is an "NO" instance of decision problem.
+In contrast, assume we can solve the decision problem $D$ in polynomial time.
+$\left \langle G, V, E, k \right \rangle$ is a "YES" instance of decision problem $D$ and we can solve it in $\mathcal{O}(n^c)$.
+The graph-coloring problem can be solved by assigning $k$ from $1$ to $|V|$ and applying at most $|V|$ times of $D$.
+That means the graph-coloring problem can be also solved in $\mathcal{O}(|V|n^c)$ time. \\
+Hence,  that your decision problem $D$ is solvable in polynomial time if and only if the graph-coloring problem is solvable in polynomial time. \\
+c)
+We first construct a new decision problem $D'$, Given a graph $G=(V,E)$, does a 3-coloring exist? Output "Yes" if it exists or "No" if it doen't. \\
+The proof consists of two parts: \\
+Part 1. Decision problem $D \in NP$: \\
+Let $x$ be the origin graph $G=(V,E)$ and the certificate $y$ be a graph $G'$ which is colored with $k$ colors.
+The verfication algorithm $V$ runs as follows: \\
+1) Check whether origin graph $G$ is identical to colored graph $G'$. If no, false; else continue. \\
+2) Check whether the end points of every edge in $G$ have different colors. If no, false; else continue. \\
+3) Check whether exactly $k$ colors are used in $G'$. If no, false; else yes. \\
+The runtime of the first step is $\mathcal{O}(|V|+|E|)$, the runtime of the second step is $\mathcal{O}(|E|)$ and the runtime of the thrid step is $\mathcal{O}(|V|)$. \\
+Hence, the decision problem $D$ can be verified in polynomial time. Hence, the decision problem $D \in NP$. \\
+Part 2. $D' \le_{p} D$: \\
+We need to present a polynomial-time many-one reduction from $D'$ to decision problem $D$. \\
+In order to prove $D' \le_{p} D$, we need to find a polynomial-time algorithm such that can transform inputs to $D'$ into inputs to decision problem $D$,
+such that the transformed problem has the same output as the original problem.
+An instance $x$ of $D'$ problem can be solved by applying the reduction algorithm and we get an instance $y$ of decision problem $D$.
+We can use the result of instance $y$ of decision problem $D$ to be the result of instance $x$ of $D'$ problem.
+Let $x$ to be the graph $G$, and let $y$ to be the graph $G'$.
+We can construct $G'$ by the following steps: \\
+1) connect every vertex in origin graph $G$ to a vertex $v$, assign $v$ a new color. \\
+2) keep doing the above procedure until we add $k-3$ vertices(add $k-3$ colors) to the origin graph $G$.
+Then the current graph is $G'$, return $G'$. \\
+Correctness: \\
+If graph $G$ is 3-colorable and instance $\left \langle G, V, E \right \rangle$ of problem $D'$ is a "YES" instance,
+then $\left \langle G', V, E, k \right \rangle$ must be a "YES" instance of decision problem $D$.
+Because in each iteration we add one vertex into the origin graph, this vertex is the only vertex that has the additional color.
+For the origin vertices in $G$, we color these vertices in $G'$ exactly like the color assign in $G$.
+And every additional color is only assigned to one vertex.
+If graph $G$ is 3-colorable, adding these vertices won't change the result. \\
+If decision problem $D$ returns true.
+Because each additional vertex in $G'$ is connected to every origin vertices in $G$,
+then every additional vertex is the only vertex has its color.
+Then if we remove all these additional vertices, the graph $G$ will only have 3 colors.
+Removing all these additional vertices won't change the result of decision problem $D$.
+Thus, the graph $G$ must be 3-colorable.
+Time complexity: \\
+Adding one vertex into the graph takes linear time.
+We need to add $k-3$ vertices, so the construction of graph $G'$ takes polynomial time. \\
+Hence, $D' \le_{p} D$.
+According to b), decision problem $D'$ is solvable in polynomial time if and only if the 3-coloring problem is solvable in polynomial time.
+Hence, $3-color \le_{p} D$ \\
+Hence, the decision problem $D$ is $NP-complete$.
+
+\problem{4}
+\solution
+a) Hamiltonian Cycle $\le$ CNF-SAT. \\
+Given a graph $G=(V,E)$, we should construct a boolean formula $R(G)$ such that $R(G)$ is satisfiable iff $G$ has a Hamiltonian Cycle. \\
+$R(G)$ has $|V|^2$ boolean variables $x_{ij}$ such that $1 \le i \le j \le |V|$.
+Let's select one vertice to be the start point and end point of our cycle.
+And we say $j=1$ for this vertex.
+We say this vertice is at the $1st$ and n$th$ position in the cycle.
+And we start from the start point and go clockwisely,
+we say the vertices we go through is at the $2nd,3rd,\cdots,(n-1)th$ positions.
+$x_{ij}$ means that the i$th$ position in the Hamiltonian cycle is occupied by vertex $j$. \\
+The boolean formula $R(G)$ should include the following clauses: \\
+1) Every vertex in $G$ should be in the cycle. \\
+$(x_{1j} \vee x_{2j} \vee \cdots \vee x_{|V|j})$ for each $j, 1 \le j \le |V|$. \\
+2) No vertex appear twice in the cycle except the start point. \\
+$(\neg x_{ij} \vee \neg x_{kj})$ for every $i,k, 1 < i < k <|V|, 1 < j \le |V|$. \\
+3) The start point should appear twice in the cycle. \\
+$\neg(\neg x_{11} \vee \neg x_{|V|1})$. \\
+4) Every position $i$ in the cycle should be occupied. \\
+$(x_{i1} \vee x_{i2} \vee \cdots \vee x_{i|V|})$ for each $1 \le i \le |V|$. \\
+5) No two vertices will occupy the same position $i$ in cycle. \\
+$(\neg x_{ij} \vee \neg x_{ik})$ for all $j,k, 1 \le j < k \le |V|, 1 \le i \le |V|$. \\
+6) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
+$(\neg x_{ki} \vee \neg x_{(k+1)j})$ for all edge $(i,j) \in G, k = 1,2,\cdots,|V|-1$. \\
+b) Hamiltonian Cycle $\le$ 01-LP. \\
+1) Every vertex appear only once in the cycle except the start point. \\
+$x_{2j} + x_{3j} + \codts + x_{|V|j} = 1$ for every $1 < j \le |V|$. \\
+2) The start point should appear twice in the cycle. \\
+$x_{11} + x_{|V|1} = 2$. \\
+3) Every position $i$ in the cycle should be occupied by only one vertex. \\
+$x_{i1} + x_{i2} + \cdots + x_{i|V|} = 1$ for each $1 \le i \le |V|$. \\
+4) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
+$x_{ki} + x_{(k+1)j} < 2$ for all edge $(i,j) \in G, k = 1,2,\cdots,|V|-1$. \\
+\end{document}

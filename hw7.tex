@@ -51,12 +51,13 @@
 \solution
 a) The potential function is:
 \begin{equation}
-    \Phi{T}=
+    \Phi(T)=
    \begin{cases}
    2 \cdot T.num - T.size &\mbox{if $\alpha(T) \ge \frac{1}{2}$,}\\
    T.size / 2 - T.num &\mbox{if $\alpha(T) < \frac{1}{2}$.}\\
    \end{cases}
 \end{equation}
+If $T.num_{i-1} > 1$: \\
 Because $\alpha_{i-1} \ge \frac{1}{2}$, and the $i$th operation is $Table-Delete$. If we want the table to contract after a $Table-Delete$, $T.num$ and $T.size$ should:
 \begin{align*}
 T.num_{i-1} &\ge \frac{1}{2} T.size_{i-1}, \\
@@ -80,10 +81,22 @@ Assume $\frac{1}{4} \le \alpha_{i} < \frac{1}{2}$
 &= 2 + 3 \cdot (\frac{1}{2} - \alpha_{i-1}) \cdot T.size_{i-1} \\
 &\le 2
 \end{align*}
+If $T.size_{i-1} = 2, num_{i-1} = 1, num_{i} = 0$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (0 - 0) - (2 \times 1 - 2) \\
+&= 1
+\end{align*}
+If $T.size_{i-1} = 1, num_{i-1} = 1, num_{i} = 0$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (0 - 0) - (2 \times 1 - 1) \\
+&= 0
+\end{align*}
 $\therefore$ The amortized cost of the operation is bounded by a constant. \\
 b) The potential function is:
 \begin{equation}
-    \Phi{T}=
+    \Phi(T)=
    \begin{cases}
    8 \cdot T.num - 4 \cdot T.size &\mbox{if $\alpha(T) \ge \frac{1}{2}$,}\\
    5 \cdot T.size - 10 \cdot T.num &\mbox{if $\alpha(T) < \frac{1}{2}$.}\\
@@ -104,6 +117,18 @@ Assume $\frac{1}{4} \le \alpha_{i} < \frac{1}{2}$
 &= 11 + 9 \cdot T.size_{i-1} - 18 \cdot T.num_{i-1} \\
 &= 11 + 9 \cdot (T.size_{i-1} - \alpha_{i-1} \cdot 2 \cdot T.size_{i-1}) \\
 &\le 11
+\end{align*}
+If $T.size_{i-1} = 2, num_{i-1} = 1, num_{i} = 0$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + 8 \times (0 - 0) - 4 \times (2 \times 1 - 2) \\
+&= 1
+\end{align*}
+If $T.size_{i-1} = 1, num_{i-1} = 1, num_{i} = 0$
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + 8 \times (0 - 0) - 4 \times (2 \times 1 - 1) \\
+&= -3
 \end{align*}
 $\therefore$ The amortized cost of the operation is bounded by a constant.
 
@@ -143,17 +168,62 @@ If $\frac{1}{3} \le \alpha_{i-1} \le \frac{1}{2}$ and the $Delete$ operation cau
 &= 2
 \end{align*}
 $\because$ $\widehat{c_i} \le 3$, $\therefore$ the amortized cost of a $Table-Delete$ that uses this strategy is bounded above by a constant. \\
-b) If we contract it by multiplying its size by $\frac{2}{3}$ when its load factor drops below $\frac{1}{6}$. We cannot have a potential function such that the amortized cost of a $Table−Delete$ is bounded above by a constant. \\
-Assume $\alpha_{i-1} \ge \frac{1}{6}$ and $\alpha_{i} < \frac{1}{6}$
+b) If we contract it by multiplying its size by $\frac{2}{3}$ when its load factor drops below $\frac{1}{6}$.
+We can find a potential function such that the amortized cost of a $Table−Delete$ is bounded above by a constant. \\
+The potential function is $\Phi (T) = |2 \cdot T.nums - \frac{1}{2} \cdot T.size|$ \\
+If $\alpha_{i-1} \ge \frac{1}{4}$ and $\alpha_{i} \ge \frac{1}{4}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (2 \cdot T.num_{i} - \frac{1}{2} \cdot T.size_{i}) - (2 \cdot T.num_{i-1} - \frac{1}{2} \cdot T.size_{i-1}) \\
+&= 1 + (2 \cdot (T.num_{i-1} - 1) - \frac{1}{2} \cdot T.size_{i-1}) - (2 \cdot T.num_{i-1} - \frac{1}{2} \cdot T.size_{i-1}) \\
+&= -1
+\end{align*}
+If $\alpha_{i-1} \ge \frac{1}{4}$ and $\alpha_{i} < \frac{1}{4}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + (\frac{1}{2} \cdot T.size_{i} - 2 \cdot T.num_{i} ) - (2 \cdot T.num_{i-1} - \frac{1}{2} \cdot T.size_{i-1}) \\
+&= 1 + (\frac{1}{2} \cdot T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1)) - (2 \cdot T.num_{i-1} - \frac{1}{2} \cdot T.size_{i-1}) \\
+&= 3 + T.size_{i-1} - 4 \cdot T.num_{i-1} \\
+&= 3 + (T.size_{i-1} - 4 \cdot \alpha_{i-1} \cdot T.size_{i-1}) \\
+&\le 3
+\end{align*}
+If $\frac{1}{6} \le \alpha_{i-1} \le \frac{1}{4}$ and $\frac{1}{6} \le \alpha_{i} \le \frac{1}{4}$ and it is a $Delete$ operation:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= 1 + ( \frac{1}{2} \cdot T.size_{i} - 2 \cdot T.num_{i} ) - ( \frac{1}{2} \cdot T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= 1 + ( \frac{1}{2} \cdot T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1) ) - ( \frac{1}{2} \cdot T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= 3
+\end{align*}
+If $\frac{1}{6} \le \alpha_{i-1} \le \frac{1}{4}$ and the $Delete$ operation cause a contraction, the actual cost of the operation
+$c_i = T.num_{i} + 1$, $T.size_{i} = \frac{2}{3} T.size_{i-1}$ and $T.num_{i-1} = \frac{1}{6} T.size_{i-1}$:
+\begin{align*}
+\widehat{c_i} &= c_i + \Phi_{i} - \Phi_{i-1} \\
+&= (T.num_{i} +1)+ ( \frac{1}{2} \cdot T.size_{i} - 2 \cdot T.num_{i} ) - ( \frac{1}{2} \cdot T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= T.num_{i-1} + \frac{2}{3} \cdot \frac{1}{2} T.size_{i-1} - 2 \cdot (T.num_{i-1} - 1) - ( \frac{1}{2} \cdot T.size_{i-1} - 2 \cdot T.num_{i-1} ) \\
+&= \frac{1}{6} \cdot T.size_{i-1} + \frac{1}{3} T.size_{i-1} - \frac{1}{3} T.size_{i-1} + 2 - \frac{1}{2} \cdot T.size_{i-1} + \frac{1}{3} \cdot T.size_{i-1} \\
+&= 2
+\end{align*}
+$\because$ $\widehat{c_i} \le 3$, $\therefore$ the amortized cost of a $Table-Delete$ that uses this strategy is bounded above by a constant.
 
 \problem{3}
 \solution
+Reduction algorithm: \\
 Suppose we can find an algorithm $A$ such that can solve the $LONGEST-PATH-LENGTH$ problem in polynomial time.
 Given an instance of decison problem $LONGEST-PATH = \{ \left \langle G,u,v,k \right \rangle : G = (V,E) \}$,
 we run algorithm $A$ on instance of problem $LONGEST-PATH-LENGTH = \{ \left \langle G,u,v \right \rangle : G = (V,E) \} $
 and we get the longest length $k'$ from algorithm $A$. $ \left \langle G,u,v,k \right \rangle $ is a "YES" instance of $LONGEST-PATH$
 if $k$ satisfies that $k \le k'$. Hence, if we can use algorithm $A$ solve $LONGEST-PATH-LENGTH$ problem in polynomial time, we also can
 solve problem $LONGEST-PATH$ in polynomial time. $LONGEST-PATH \in P$ if $LONGEST-PATH-LENGTH \in P$. \\
+Correctness of reduction algorithm: \\
+Assume for instance $\left \langle G,u,v \right \rangle$ of problem $LONGEST-PATH-LENGTH$, the correct result is $k'$. It means we can find
+the longest path from $u$ to $v$ in $G$ has length of $k$. This means we can find path from $u$ to $v$ in $G$ of length is smaller than $k$ and we cannot
+find a path from $u$ to $v$ in $G$ that has length larger than $k$. Then instance $\left \langle G,u,v,k' \right \rangle$ of problem longest path is
+a "YES" instance because we can find a simple path from $u$ to $v$ in $G$ consisting of at least $k'$ edges. Because instance $\left \langle G,u,v,k' \right \rangle$ is
+a "YES" instance, this implies the answers for instances $\left \langle G,u,v,k \right \rangle$ such that $k \le k'$ are all "YES". For instances $\left \langle G,u,v,k \right \rangle$
+such that $k > k'$, the answers are "NO". Because if we can find an instance $\left \langle G,u,v,k \right \rangle$ which is a "YES" instance and $k>k'$, then we can find
+a path from $u$ to $v$ in $G$ that has length larger than $k'$ and the result $k'$ of problem $LONGEST-PATH-LENGTH = \{ \left \langle G,u,v \right \rangle : G = (V,E) \} $ is
+incorrect. This contradicts our assumption. \\
+Reduction algorithm: \\
 Suppose we can find an algorithm $A'$ such that can solve the $LONGEST-PATH$ problem in polynomial time.
 We can use algorithm $A'$ to try when $k' = 1,2,\cdots,n$, whether instance $ \left \langle G,u,v,k' \right \rangle $ is a "YES" instance of problem
 $LONGEST-PATH$. Then the result $k$ of problem $LONGEST-PATH-LENGTH = \{ \left \langle G,u,v \right \rangle : G = (V,E) \} $ is
@@ -161,6 +231,10 @@ the largest $k'$ such that $ \left \langle G,u,v,k' \right \rangle $ is a "YES" 
 solve problem $LONGEST-PATH$ in polynomial time $\mathcal{O}(n^m)$ and we do it $n$ times. The total runtime is $\mathcal{O}(n^{m+1})$ which is still
 polynomial time. Hence, if we can use algorithm $A'$ solve $LONGEST-PATH$ problem in polynomial time, we also can solve $LONGEST-PATH-LENGH$ in polynomial time.
 $LONGEST-PATH-LENGTH \in P$ if $LONGEST-PATH \in P$. \\
+Correctness of reduction algorithm: \\
+If $ \left \langle G,u,v,k' \right \rangle $ is a "YES" instance of problem $LONGEST-PATH$, then it means we can find a path from $u$ to $v$ in $G$ such that
+consists of at least $k'$ edges. This means that we can find a path from $u$ to $v$ in $G$ such that consists of $k'$ edges.
+Then we pick the largest $k$ such that return true for $LONGEST-PATH$ problem to be the result of $LONGEST-PATH-LENGTH$.  \\
 Hence, the optimization problem $LONGEST-PATH-LENGTH$ can be solved in polynomial time if and only if $LONGEST-PATH \in P$.
 
 \problem{4}
@@ -213,7 +287,7 @@ Algorithm $f_{12}$: \\
 return ASCII file;
 \end{algorithm}
 This algorithm has two loops and assume each iteration takes $\mathcal{O}(k)$ time, so the total runtime of this algorithm is $\mathcal{O}(k|V|^2)$.
-Hence, algorthm $f_{12}$ runs in polynomial time and $f_{12}(e_1(i)) = e_2(i)$.
+Hence, algorthm $f_{12}$ runs in polynomial time and $f_{12}(e_1(i)) = e_2(i)$. \\
 Algorithm $f_{21}$: \\
 \begin{algorithm}[H]
 \KwData{$e_1$}
@@ -242,11 +316,20 @@ $\therefore$ these two encodings are polynomially related.
 \solution
 The dynamic-programming solution given to the 0-1 knapsack problem that runs in $\mathcal{O}(nW)$ time,
 where $n$ is the number of items and $W$ is the maximum weight of items that the thief can put in his knapsack. \\
-If the weight $W$ is provided in $unary$, then the running time of the algorithm is $\mathcal{O}(nW)$ on length-$nW$ inputs,
-which is polynomial time. However, if encoding of an integer is not polynomially related to its binary representation.
-Let's say the input of the problem, $W$, is given as a binary number. Hence, the input size of this problem
-is $\mathcal{O}(n \log W)$. Because for any fixed constant $c$, $nW > (n \log W)^{c}$, so the runtime $\mathcal{O}(nW)$
-is not a polynomial-time solution to the input size $\mathcal{O}(n \log W)$. \\
-How we encode an abstract problem matters quite a bit to how we understand polynomial time. Hence, the solution given to the 0-1 knapsack problem is not a polynomial-time solution.
+In order to store $W$ and value of items(Assume the maximum value is $V$), we use fixed size alphabet.
+The input size is the size of $n$ items and the capacity $W$ of knapsack. \\
+If the size of alphabet is larger than 1.
+For n items, we need $\mathcal{O}(n(\log W + \log V))$
+space to store and we need $\mathcal{O}(\log W)$ space to store the capacity $W$ of knapsack.
+Hence, the input size is $\mathcal{O}(n(\log W + \log V))$.
+For a fixed $V$ and any constant $c$, we can always find a $W$ such that $nW > (n (\log W + \log V))^{c}$.
+Therefore the runtime $\mathcal{O}(nW)$ is not polynomial-time to the input size $\mathcal{O}(n (\log W + \log V))$.
+It is not a polynomial-time solution. \\
+If the size of alphabet is 1.
+Then the input size is $\mathcal{O}(nWV)$.
+For a fixed $V$, we can find a constant $c$ and $W_0$ such that for all $W \ge W_0$, $nW < (nWV)^c$.
+Therefore the runtime $\mathcal{O}(nW)$ is polynomial-time to the input size $\mathcal{O}(n (\log W + \log V))$.
+It is a polynomial-time solution. \\
+How we encode an abstract problem matters quite a bit to how we understand polynomial time.
 
 \end{document}
