@@ -50,7 +50,7 @@
 \problem{1}
 \solution
 We need to show that a verification algorithm $V(x,y)$ can verify
-language $GRAPH-ISOMORPHISM = \{ \left \langle G_1, G_2 \right \rangle : G_1\ and\ G_2\ are\ isomorphic\ graphsg\}$
+language $GRAPH-ISOMORPHISM = \{ \left \langle G_1, G_2 \right \rangle : G_1\ and\ G_2\ are\ isomorphic\ graphs\}$
 in polynomial time. \\
 We let $x$ to be the two graph $G_1$ and $G_2$ and let the certificate $y$ to be a map $\{ f: v \in A, f(v) \in B \}$ from nodes in $G_1$ to nodes in $G_2$.
 The verification algorithm runs as follows: \\
@@ -190,35 +190,88 @@ Hence, the decision problem $D$ is $NP-complete$.
 
 \problem{4}
 \solution
-a) Hamiltonian Cycle $\le$ CNF-SAT. \\
-Given a graph $G=(V,E)$, we should construct a boolean formula $R(G)$ such that $R(G)$ is satisfiable iff $G$ has a Hamiltonian Cycle. \\
+A Hamiltonian cycle can be expressed as a permutation $Perm$ of $\{1,2,\cdots,n\}$
+such that $Perm(p) = q$ means the $p$th position is occupied by vertex $q$.
+And edge $(Perm(p),Perm(p+1)) \in G, 1 \le p \le n, Perm(n + 1) = Perm(1)$. \\
+a) $HC \le_{p} CNF-SAT$. \\
+Given a graph $G=(V,E)$, we should construct a boolean formula $R(G)$ such that $R(G)$ is satisfiable iff $G$ has a Hamiltonian cycle. \\
+Let $v(1),v(2),\cdots,v(n)$ be the vertices of $G$.
+Let $w(1),w(2),\cdots,w(n)$ be our target Hamiltonian cycle in $G$.
+Convention: $x(p,q)=true$ iff $w(p) = v(q)$.
+To describe that $w(1),w(2),\cdots,w(n)$ is a Hamiltonian cycle in $G$, we will say the following in terms of $CNF-SAT$ clauses: \\
 $R(G)$ has $|V|^2$ boolean variables $x_{ij}$ such that $1 \le i \le j \le |V|$.
-Let's select one vertice to be the start point and end point of our cycle.
-And we say $j=1$ for this vertex.
-We say this vertice is at the $1st$ and n$th$ position in the cycle.
-And we start from the start point and go clockwisely,
-we say the vertices we go through is at the $2nd,3rd,\cdots,(n-1)th$ positions.
-$x_{ij}$ means that the i$th$ position in the Hamiltonian cycle is occupied by vertex $j$. \\
 The boolean formula $R(G)$ should include the following clauses: \\
 1) Every vertex in $G$ should be in the cycle. \\
-$(x_{1j} \vee x_{2j} \vee \cdots \vee x_{|V|j})$ for each $j, 1 \le j \le |V|$. \\
-2) No vertex appear twice in the cycle except the start point. \\
-$(\neg x_{ij} \vee \neg x_{kj})$ for every $i,k, 1 < i < k <|V|, 1 < j \le |V|$. \\
-3) The start point should appear twice in the cycle. \\
-$\neg(\neg x_{11} \vee \neg x_{|V|1})$. \\
-4) Every position $i$ in the cycle should be occupied. \\
-$(x_{i1} \vee x_{i2} \vee \cdots \vee x_{i|V|})$ for each $1 \le i \le |V|$. \\
-5) No two vertices will occupy the same position $i$ in cycle. \\
-$(\neg x_{ij} \vee \neg x_{ik})$ for all $j,k, 1 \le j < k \le |V|, 1 \le i \le |V|$. \\
-6) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
-$(\neg x_{ki} \vee \neg x_{(k+1)j})$ for all edge $(i,j) \in G, k = 1,2,\cdots,|V|-1$. \\
-b) Hamiltonian Cycle $\le$ 01-LP. \\
-1) Every vertex appear only once in the cycle except the start point. \\
-$x_{2j} + x_{3j} + \codts + x_{|V|j} = 1$ for every $1 < j \le |V|$. \\
-2) The start point should appear twice in the cycle. \\
-$x_{11} + x_{|V|1} = 2$. \\
-3) Every position $i$ in the cycle should be occupied by only one vertex. \\
-$x_{i1} + x_{i2} + \cdots + x_{i|V|} = 1$ for each $1 \le i \le |V|$. \\
-4) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
-$x_{ki} + x_{(k+1)j} < 2$ for all edge $(i,j) \in G, k = 1,2,\cdots,|V|-1$. \\
+Each $v(q)$ is at least one of $w(1), w(2), \cdots , w(n)$. \\
+$(x(w(1),v(q)) \vee x(w(2),v(q)) \vee \cdots \vee x(w(n),v(q)))$ for $q, 1 \le q \le n$. \\
+2) No vertex appear twice in the cycle. \\
+Each $v(q)$ is at most one of $w(1), w(2), \cdots , w(n)$. \\
+$(\neg x(w(p),v(q)) \vee \neg x(w(p'),v(q)))$ for every $p,p',q, 1 \le q \le n, 1 \le p \le n, 1\le p' \le n, p \neq p'$. \\
+3) Every position $i$ in the cycle should be occupied. \\
+Each $w(p)$ is at least one of $v(1),v(2),\cdots,v(n)$. \\
+$(x(w(p),v(1)) \vee x(w(p),v(2)) \vee \cdots \vee x(w(p),v(n))$ for each $1 \le p \le n$. \\
+4) No two vertices will occupy the same position $i$ in cycle. \\
+Each $w(p)$ is at most one of $v(1), v(2), \cdots, v(n)$ \\
+$(\neg x(w(p),v(q)) \vee \neg x(w(p),v(q')))$ for every $p,q,q' 1 \le q \le n, 1 \le q' \le n, 1\le p \le n, p \neq p'$. \\
+5) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
+For each $p$, $w(p)$ and $w(p+1)$ form an edge in $G$, $w(n+1) = w(1)$. \\
+$(\neg x(w(p),v(q)) \vee \neg x(w(p+1),v(q')))$ for all edge $(v(q),v(q')) \notin G, 1 \le p \le n $. \\
+By this way, we can construct a $CNF-SAT$ problem. \\
+Correctness: \\
+If graph $G$ is a Hamiltonian cycle, then it fulfills all the five conditions above.
+Then all clauses in five sets should return true.
+Hence, the boolean formula is a "YES" instance of problem $CNF-SAT$. \\
+If all clauses in five sets are true, the boolean formula is a "YES" instance of problem $CNF-SAT$.
+The first and the second sets of clauses guarantee that $1 \le q \le n$
+is only assign to the right of equation of exacly one $Perm$ in $Perm$ of $\{1,2,\cdots,n\}$,
+which means every vertex appears in the cycle only once.
+The third and the forth sets of clauses guarantee that each
+$Perm(p), 1 \le p \le n$ exactly has one value which means every position in the cycle is occupied only once.
+The firth set of clauses guarantee that $Perm$ of $\{1,2,\cdots,n\}$ is a cycle in $G$.
+Hence, the $Perm$ of $\{1,2,\cdots,n\}$ is a Hamiltonian cycle in $G$. \\
+Time complexity: \\
+The first set of clauses consists of $\mathcal{O}(n)$ clauses, then it has $\mathcal{O}(n^2)$ literals.
+The second set of clauses consists of $\mathcal{O}(n^2)$ clauses, then it has $\mathcal{O}(n^3)$ literals.
+The third set of clauses consists of $\mathcal{O}(n)$ clauses, then it has $\mathcal{O}(n^2)$ literals.
+The fourth set of clauses consists of $\mathcal{O}(n^2)$ clauses, then it has $\mathcal{O}(n^3)$ literals.
+The firth set of clauses consists of $\mathcal{O}(n^2)$ clauses, then it has $\mathcal{O}(n^3)$ literals.
+The runtime of constructing one clause is $\mathcal{O}(1)$, hence, the total runtime is $\mathcal{O}(n^3)$. \\
+In conclusion, $G$ is a "YES" instance of $HC$ iff $R(G)$ is a "YES" instance of $CNF-SAT$.
+The algorithm from $HC$ to $CNF-SAT$ runs in polynomial time.
+Therefore, $HC \le_{p} CNF-SAT$.
+b) $HC \le_{p} 01-LP$. \\
+Given a graph $G=(V,E)$, we should construct a set of constraints $R(G)$ such that $R(G)$ is satisfiable iff $G$ has a Hamiltonian Cycle. \\
+Let $v(1),v(2),\cdots,v(n)$ be the vertices of $G$.
+Let $w(1),w(2),\cdots,w(n)$ be our target Hamiltonian cycle in $G$.
+Convention: $x(p,q)=1$ iff $w(p) = v(q)$.
+To describe that $w(1),w(2),\cdots,w(n)$ is a Hamiltonian cycle in $G$, we will say the following in terms of 01-LP problem: \\
+1) Every vertex appear only once in the cycle. \\
+Each $v(q)$ is exactly one of $w(1), w(2), \cdots, w(n)$. \\
+$x(w(1),v(q)) + x(w(2),v(q)) + \cdots + x(w(n),v(q)) = 1$ for $q, 1 \le q \le n$. \\
+2) Every position $i$ in the cycle should be occupied by only one vertex. \\
+Each $w(p)$ is exactly one of $v(1), \cdots, v(n)$. \\
+$x(w(p),v(1)) + x(w(p),v(2)) + \cdots + x(w(p),v(n)) = 1$ for $p, 1 \le p \le n$. \\
+3) If two vertices are not adjacent, they cannot be adjacent in graph $G$. \\
+For each $p$, $w(p)$ and $w(p+1)$ form an edge in $G$, $w(n+1) = w(1)$. \\
+$x(w(p),v(q)) + x(w(p+1),v(q')) < 2$ for all edge $(v(q),v(q')) \notin G, 1 \le p \le n$. \\
+Correctness: \\
+If graph $G$ is a hamiltonian cycle, then it fulfills all the three conditions above.
+Then all three sets of constraints should hold.
+Hence, this is a "YES" instance of problem 01-LP. \\
+If all constraints in three sets hold, the boolean formula is a "YES" instance of problem 01-LP.
+The first set of constraints guarantee that $1 \le q \le n$
+is only assign to the right of equation of exacly one $Perm$ in $Perm$ of $\{1,2,\cdots,n\}$,
+which means every vertex appears in the cycle only once.
+The second set of constraints guarantee that each
+$Perm(p), 1 \le p \le n$ exactly has one value which means every position in the cycle is occupied only once.
+The third set of constraints guarantee that $Perm$ of $\{1,2,\cdots,n\}$ is a cycle in $G$.
+Hence, the $Perm$ of $\{1,2,\cdots,n\}$ is a Hamiltonian cycle in $G$. \\
+Time complexity: \\
+The first set of constraints consists of $\mathcal{O}(n)$ constraints, then it has $\mathcal{O}(n^2)$ variables.
+The second set of constraints consists of $\mathcal{O}(n^2)$ constraints, then it has $\mathcal{O}(n^3)$ variables.
+The third set of constraints consists of $\mathcal{O}(n^2)$ constraints, then it has $\mathcal{O}(n^3)$ variables.
+The runtime of constructing one clause is $\mathcal{O}(1)$, hence, the total runtime is $\mathcal{O}(n^3)$. \\
+In conclusion, $G$ is a "YES" instance of $HC$ iff $R(G)$ is a "YES" instance of $01-LP$.
+The algorithm from $HC$ to $01-LP$ runs in polynomial time.
+Therefore, $HC \le_{p} 01-LP$. \\
 \end{document}
